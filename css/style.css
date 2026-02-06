@@ -886,6 +886,133 @@ body.edit-mode [data-i18n].editing {
   }
 }
 
+/* --- Modal (GitHub Settings) --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  background: rgba(0,0,0,0.25);
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modal-backdrop {
+    background: rgba(0,0,0,0.5);
+  }
+}
+
+.modal {
+  position: fixed;
+  z-index: 410;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 48px var(--card-shadow);
+  padding: 1.5rem;
+  width: 400px;
+  max-width: calc(100vw - 2rem);
+  max-height: calc(100vh - 4rem);
+  overflow-y: auto;
+  animation: editorIn 0.25s ease-out;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.modal-header h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  line-height: 1;
+  transition: color var(--transition);
+}
+
+.modal-close:hover {
+  color: var(--accent);
+}
+
+.modal-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.modal .form-group {
+  margin-bottom: 1rem;
+}
+
+.modal .form-group label {
+  font-size: 0.85rem;
+}
+
+.modal .form-group input {
+  font-size: 0.9rem;
+}
+
+.form-hint {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+  margin-top: 0.3rem;
+  line-height: 1.4;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+/* Save-to-GitHub button in edit banner */
+.edit-mode-banner .banner-save {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-left: 0.25rem;
+  transition: background 0.2s ease;
+}
+
+.edit-mode-banner .banner-save:hover {
+  background: rgba(255,255,255,0.35);
+}
+
+.edit-mode-banner .banner-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* --- Responsive --- */
 @media (max-width: 640px) {
   .nav-links {
