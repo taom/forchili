@@ -1013,6 +1013,76 @@ body.edit-mode [data-i18n].editing {
   cursor: not-allowed;
 }
 
+/* --- Per-section Edit Buttons --- */
+.hero,
+.section,
+.site-footer {
+  position: relative;
+}
+
+.section-edit-btn {
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  z-index: 20;
+  box-shadow: 0 2px 8px var(--card-shadow);
+  padding: 0;
+}
+
+.hero:hover > .section-edit-btn,
+.section:hover > .section-edit-btn,
+.site-footer:hover > .section-edit-btn {
+  opacity: 0.6;
+}
+
+.section-edit-btn:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px var(--card-shadow);
+  border-color: var(--accent);
+}
+
+.section-edit-btn:active {
+  transform: scale(0.95);
+}
+
+/* Hero: center the button below the portrait area */
+.hero > .section-edit-btn {
+  top: auto;
+  bottom: 2rem;
+  right: 50%;
+  transform: translateX(50%);
+}
+
+.hero:hover > .section-edit-btn {
+  opacity: 0.6;
+  transform: translateX(50%);
+}
+
+.hero > .section-edit-btn:hover {
+  opacity: 1 !important;
+  transform: translateX(50%) scale(1.1);
+}
+
+/* On touch devices (no hover), show with low opacity always */
+@media (hover: none) {
+  .section-edit-btn {
+    opacity: 0.4;
+  }
+}
+
 /* --- Responsive --- */
 @media (max-width: 640px) {
   .nav-links {
@@ -1060,7 +1130,6 @@ body.edit-mode [data-i18n].editing {
   .thought-card {
     padding: 1rem 1.25rem;
   }
-}
 
   .inline-editor {
     width: calc(100vw - 2rem);
@@ -1071,6 +1140,10 @@ body.edit-mode [data-i18n].editing {
   .edit-mode-banner {
     bottom: 1rem;
     right: 1rem;
+  }
+
+  .section-edit-btn {
+    opacity: 0.5;
   }
 }
 

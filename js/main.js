@@ -437,8 +437,8 @@
   var currentEditingKey = null;
   var banner = null;
 
-  function toggleEditMode() {
-    editMode = !editMode;
+  function setEditMode(on) {
+    editMode = on;
     document.body.classList.toggle('edit-mode', editMode);
     document.getElementById('editToggle').classList.toggle('active', editMode);
 
@@ -448,6 +448,10 @@
       hideBanner();
       closeEditor();
     }
+  }
+
+  function toggleEditMode() {
+    setEditMode(!editMode);
   }
 
   function showBanner() {
@@ -487,10 +491,7 @@
 
   function openEditor(el) {
     var key = el.getAttribute('data-i18n');
-    if (!key) return;
-
-    // Don't edit nav links or editor UI
-    if (key.indexOf('editor.') === 0) return;
+    if (!key || !isEditableKey(key)) return;
 
     currentEditingEl = el;
     currentEditingKey = key;
@@ -778,6 +779,44 @@
     }
   }
 
+  // ─── Per-section Edit Buttons ────────────────
+  var EDIT_BTN_SVG =
+    '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>' +
+    '<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+
+  function injectSectionEditButtons() {
+    var sections = document.querySelectorAll('.hero, .section, .site-footer');
+    sections.forEach(function (section) {
+      var btn = document.createElement('button');
+      btn.className = 'section-edit-btn';
+      btn.setAttribute('aria-label', 'Edit this section');
+      btn.innerHTML = EDIT_BTN_SVG;
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (!editMode) setEditMode(true);
+        // Find and open editor for the first editable element in this section
+        var firstEditable = section.querySelector(
+          '[data-i18n]:not([data-i18n^="editor."]):not([data-i18n^="gh."]):not([data-i18n^="nav."])'
+        );
+        if (firstEditable) {
+          openEditor(firstEditable);
+        }
+      });
+      section.appendChild(btn);
+    });
+  }
+
+  // Helper: is this i18n key editable content (not UI chrome)?
+  function isEditableKey(key) {
+    if (!key) return false;
+    if (key.indexOf('editor.') === 0) return false;
+    if (key.indexOf('gh.') === 0) return false;
+    if (key.indexOf('nav.') === 0) return false;
+    return true;
+  }
+
   // ─── GitHub Modal ───────────────────────────
   function openGhModal() {
     var modal = document.getElementById('ghModal');
@@ -871,29 +910,40 @@
     // Apply saved language
     applyTranslations(currentLang);
 
-    // Edit mode toggle
+    // Edit mode toggle (header button)
     document
       .getElementById('editToggle')
-      .addEventListener('click', toggleEditMode);
+      .addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleEditMode();
+      });
 
-    // Click handler for editable elements (event delegation on body)
-    document.body.addEventListener('click', function (e) {
-      if (!editMode) return;
+    // Inject per-section edit buttons
+    injectSectionEditButtons();
 
-      // Find the closest [data-i18n] element
-      var target = e.target.closest('[data-i18n]');
-      if (!target) return;
+    // Click handler for editable elements in edit mode
+    // Uses capture phase so it fires before any other handlers
+    document.addEventListener(
+      'click',
+      function (e) {
+        if (!editMode) return;
 
-      // Skip nav links (they navigate) and editor keys
-      var key = target.getAttribute('data-i18n');
-      if (key.indexOf('editor.') === 0) return;
+        // Don't intercept clicks on buttons, inputs, or the editor itself
+        if (e.target.closest('.inline-editor, .edit-mode-banner, .modal, .section-edit-btn, .edit-toggle, .lang-toggle, .nav-logo, .thoughts-form, .thought-delete')) return;
 
-      // Prevent default link behavior in edit mode
-      e.preventDefault();
-      e.stopPropagation();
+        var target = e.target.closest('[data-i18n]');
+        if (!target) return;
 
-      openEditor(target);
-    });
+        var key = target.getAttribute('data-i18n');
+        if (!isEditableKey(key)) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        openEditor(target);
+      },
+      true // capture phase
+    );
 
     // Editor save / cancel
     editorSaveBtn.addEventListener('click', handleEditorSave);
