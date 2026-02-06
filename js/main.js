@@ -1,13 +1,14 @@
 /* ============================================
    Chili Memorial — JavaScript
-   i18n, thoughts (localStorage), scroll animations
+   i18n, inline editing, auto-translate,
+   thoughts (localStorage), scroll animations
    ============================================ */
 
 (function () {
   'use strict';
 
-  // ─── Translations ──────────────────────────
-  const translations = {
+  // ─── Translations (defaults) ───────────────
+  var defaultTranslations = {
     en: {
       'nav.about': 'About',
       'nav.memories': 'Memories',
@@ -65,12 +66,21 @@
       'thoughts.submit': 'Leave a Message',
       'thoughts.note':
         'Messages are saved in your browser so your family can read them on this device.',
-      'thoughts.empty': 'No messages yet. Be the first to write something for Chili.',
+      'thoughts.empty':
+        'No messages yet. Be the first to write something for Chili.',
       'thoughts.toast': 'Your message for Chili has been saved \u2764\uFE0F',
       'thoughts.deleteConfirm': 'Remove this message?',
       'footer.madeWith': 'Made with love, in memory of Chili',
       'footer.quote':
         '\u201CThe world was a better place with you in it.\u201D',
+      // Editor UI strings
+      'editor.cancel': 'Cancel',
+      'editor.save': 'Save & Translate',
+      'editor.translating': 'Translating\u2026',
+      'editor.saved': 'Saved & translated',
+      'editor.savedOnly': 'Saved',
+      'editor.error': 'Translation failed \u2014 saved current language only',
+      'editor.banner': 'Edit Mode',
     },
     zh: {
       'nav.about': '\u5173\u4E8EChili',
@@ -78,14 +88,12 @@
       'nav.thoughts': '\u7559\u8A00',
       'hero.subtitle':
         '\u6C38\u8FDC\u662F\u6211\u4EEC\u7684\u9633\u5149\uFF0C\u6C38\u8FDC\u662F\u6211\u4EEC\u7684\u597D\u5973\u5B69',
-      'about.title':
-        '\u6211\u4EEC\u6700\u7231\u7684Chili',
+      'about.title': '\u6211\u4EEC\u6700\u7231\u7684Chili',
       'about.intro1':
         'Chili\u662F\u4E00\u53EA\u7F8E\u4E3D\u7684\u5FB7\u56FD\u7267\u7F8A\u72AC\uFF0C2019\u5E74\u6765\u5230\u6211\u4EEC\u7684\u751F\u6D3B\u4E2D\uFF0C\u90A3\u65F6\u5979\u8FD8\u662F\u4E00\u53EA\u5C0F\u5C0F\u7684\u3001\u597D\u5947\u7684\u5E7C\u72AC\uFF0C\u6709\u7740\u5927\u5927\u7684\u722A\u5B50\u548C\u6700\u6DF1\u60C5\u7684\u68D5\u8272\u773C\u775B\u3002\u5728\u7F8E\u597D\u7684\u4E03\u5E74\u91CC\uFF0C\u5979\u6210\u957F\u4E3A\u6211\u4EEC\u5BB6\u5EAD\u6240\u80FD\u62E5\u6709\u7684\u6700\u5FE0\u8BDA\u3001\u6700\u6E29\u67D4\u3001\u6700\u6709\u7231\u7684\u4F19\u4F34\u3002',
       'about.intro2':
         '\u5979\u4E0D\u4EC5\u4EC5\u662F\u4E00\u53EA\u72D7\u2014\u2014\u5979\u662F\u90A3\u4E2A\u5728\u95E8\u53E3\u7528\u6574\u4E2A\u8EAB\u4F53\u6447\u6446\u7740\u6B22\u8FCE\u6211\u4EEC\u56DE\u5BB6\u7684\u5BB6\u4EBA\u3002\u5979\u662F\u5BD2\u51B7\u591C\u665A\u8EAB\u8FB9\u6E29\u6696\u7684\u5B58\u5728\u3002\u5979\u662F\u8BA9\u5B69\u5B50\u4EEC\u722C\u6765\u722C\u53BB\u7684\u8010\u5FC3\u73A9\u4F34\u3002\u5979\u662F\u5B88\u62A4\u6211\u4EEC\u5BB6\u56ED\u7684\u536B\u58EB\u3002\u5979\u662F\u6211\u4EEC\u771F\u6B63\u7684\u5BB6\u4EBA\u3002',
-      'about.specialTitle':
-        'Chili\u7684\u7279\u522B\u4E4B\u5904',
+      'about.specialTitle': 'Chili\u7684\u7279\u522B\u4E4B\u5904',
       'about.special1':
         '\u5979\u6709\u6700\u6E29\u67D4\u7684\u7075\u9B42\u2014\u2014\u5BF9\u5B69\u5B50\u4EEC\u603B\u662F\u90A3\u4E48\u5C0F\u5FC3\u548C\u8010\u5FC3',
       'about.special2':
@@ -98,8 +106,7 @@
         '\u5979\u6700\u559C\u6B22\u7684\u4F4D\u7F6E\u662F\u7D27\u6328\u7740\u5BB6\u91CC\u7684\u4EFB\u4F55\u4EBA',
       'about.special6':
         '\u5979\u575A\u4FE1\u81EA\u5DF1\u662F\u4E00\u53EA\u5C0F\u578B\u72AC\uFF0C\u5C3D\u7BA1\u5979\u6709\u4E09\u5341\u516C\u65A4\u91CD',
-      'about.favoritesTitle':
-        'Chili\u6700\u559C\u6B22\u7684\u4E8B\u60C5',
+      'about.favoritesTitle': 'Chili\u6700\u559C\u6B22\u7684\u4E8B\u60C5',
       'about.fav1':
         '\u8349\u5730\u4E0A\u8FD8\u6709\u9732\u6C34\u65F6\u7684\u65E9\u6668\u6563\u6B65',
       'about.fav2':
@@ -108,19 +115,16 @@
         '\u809A\u76AE\u6309\u6469\u2014\u2014\u5979\u4F1A\u4E3A\u4EFB\u4F55\u4EBA\u7FFB\u8EAB',
       'about.fav4':
         '\u4FDD\u62A4\u5BB6\u4EBA\u4E0D\u53D7\u53EF\u7591\u677E\u9F20\u7684\u4FB5\u6270',
-      'about.fav5':
-        '\u5728\u7A97\u8FB9\u7684\u9633\u5149\u4E2D\u6253\u76F9',
+      'about.fav5': '\u5728\u7A97\u8FB9\u7684\u9633\u5149\u4E2D\u6253\u76F9',
       'about.fav6':
         '\u5F85\u5728\u5BB6\u4EBA\u8EAB\u8FB9\u7684\u4EFB\u4F55\u5730\u65B9',
       'memories.title': '\u7F8E\u597D\u56DE\u5FC6',
       'memories.subtitle':
         '\u4E03\u5E74\u7684\u7231\u3001\u5FEB\u4E50\u548C\u6447\u6446\u7684\u5C3E\u5DF4',
-      'memories.m1Title':
-        '\u6211\u4EEC\u76F8\u9047\u7684\u90A3\u5929',
+      'memories.m1Title': '\u6211\u4EEC\u76F8\u9047\u7684\u90A3\u5929',
       'memories.m1Text':
         '\u6211\u4EEC\u8BB0\u5F97\u628AChili\u5E26\u56DE\u5BB6\u7684\u90A3\u5929\u2014\u2014\u4E00\u4E2A\u5C0F\u5C0F\u7684\u6BDB\u7403\uFF0C\u8033\u6735\u5927\u5F97\u548C\u5934\u4E0D\u6210\u6BD4\u4F8B\u3002\u5979\u63A2\u7D22\u4E86\u623F\u5B50\u7684\u6BCF\u4E2A\u89D2\u843D\uFF0C\u7136\u540E\u5C31\u5728\u5BA2\u5385\u5730\u677F\u6B63\u4E2D\u592E\u7761\u7740\u4E86\u3002\u90A3\u4E00\u523B\uFF0C\u5979\u5C31\u628A\u6211\u4EEC\u7684\u5BB6\u53D8\u6210\u4E86\u5979\u7684\u5BB6\u3002',
-      'memories.m2Title':
-        '\u8FFD\u677E\u9F20\u5927\u4F5C\u6218',
+      'memories.m2Title': '\u8FFD\u677E\u9F20\u5927\u4F5C\u6218',
       'memories.m2Text':
         'Chili\u975E\u5E38\u8BA4\u771F\u5730\u5BF9\u5F85\u5979\u4F5C\u4E3A\u5BB6\u5EAD\u5B88\u62A4\u8005\u7684\u804C\u8D23\uFF0C\u5C24\u5176\u662F\u9762\u5BF9\u677E\u9F20\u7684\u65F6\u5019\u3002\u5979\u66FE\u7ECF\u82B1\u4E86\u6574\u4E2A\u4E0B\u5348\u76EF\u7740\u4E00\u68F5\u6811\u770B\uFF0C\u575A\u4FE1\u53EA\u8981\u5979\u7B49\u5F97\u591F\u4E45\uFF0C\u677E\u9F20\u5C31\u4F1A\u4E0B\u6765\u548C\u5979\u4E00\u8D77\u73A9\u3002',
       'memories.m3Title': '\u7761\u524D\u4EEA\u5F0F',
@@ -129,20 +133,16 @@
       'memories.m4Title': '\u4E0B\u96EA\u5929',
       'memories.m4Text':
         'Chili\u7B2C\u4E00\u6B21\u770B\u5230\u96EA\u7684\u65F6\u5019\uFF0C\u4E0D\u77E5\u9053\u8BE5\u600E\u4E48\u529E\u3002\u7136\u540E\u5979\u5F00\u59CB\u5728\u96EA\u5730\u91CC\u8E66\u8DF3\uFF0C\u7528\u820C\u5934\u63A5\u96EA\u82B1\uFF0C\u5728\u96EA\u5730\u4E0A\u6253\u6EDA\u3002\u7EAF\u7CB9\u7684\u5FEB\u4E50\u2014\u2014\u90A3\u5C31\u662FChili\u7684\u65B9\u5F0F\u3002',
-      'memories.m5Title':
-        '\u6700\u597D\u7684\u503E\u542C\u8005',
+      'memories.m5Title': '\u6700\u597D\u7684\u503E\u542C\u8005',
       'memories.m5Text':
         '\u6BCF\u5F53\u5BB6\u91CC\u6709\u4EBA\u5FC3\u60C5\u4E0D\u597D\u7684\u65F6\u5019\uFF0CChili\u603B\u662F\u77E5\u9053\u3002\u5979\u4F1A\u6084\u6084\u8D70\u8FC7\u6765\uFF0C\u628A\u5934\u6401\u5728\u4F60\u7684\u817F\u4E0A\uFF0C\u5C31\u90A3\u6837\u9759\u9759\u5730\u966A\u7740\u4F60\u3002\u4E0D\u8BC4\u5224\uFF0C\u4E0D\u8FFD\u95EE\u2014\u2014\u53EA\u6709\u7231\u3002\u5979\u6709\u4E00\u79CD\u8BA9\u4E00\u5207\u90FD\u53D8\u5F97\u597D\u4E00\u70B9\u7684\u5929\u8D4B\u3002',
-      'thoughts.title':
-        '\u7ED9Chili\u7684\u8BDD',
+      'thoughts.title': '\u7ED9Chili\u7684\u8BDD',
       'thoughts.subtitle':
         '\u5206\u4EAB\u4F60\u6700\u559C\u6B22\u7684\u56DE\u5FC6\uFF0C\u4E00\u6761\u6D88\u606F\uFF0C\u6216\u8005\u53EA\u662F\u8BF4\u58F0\u518D\u89C1\u3002Chili\u4E00\u5B9A\u4F1A\u5F88\u5F00\u5FC3\u77E5\u9053\u5979\u88AB\u8BB0\u4F4F\u3002',
       'thoughts.nameLabel': '\u4F60\u7684\u540D\u5B57',
       'thoughts.namePlaceholder': '\u4F60\u7684\u540D\u5B57',
-      'thoughts.messageLabel':
-        '\u4F60\u60F3\u5BF9Chili\u8BF4\u7684\u8BDD',
-      'thoughts.messagePlaceholder':
-        '\u5199\u70B9\u4EC0\u4E48\u7ED9Chili\u2026',
+      'thoughts.messageLabel': '\u4F60\u60F3\u5BF9Chili\u8BF4\u7684\u8BDD',
+      'thoughts.messagePlaceholder': '\u5199\u70B9\u4EC0\u4E48\u7ED9Chili\u2026',
       'thoughts.submit': '\u7559\u4E0B\u6D88\u606F',
       'thoughts.note':
         '\u6D88\u606F\u4FDD\u5B58\u5728\u4F60\u7684\u6D4F\u89C8\u5668\u4E2D\uFF0C\u5BB6\u4EBA\u53EF\u4EE5\u5728\u8FD9\u53F0\u8BBE\u5907\u4E0A\u9605\u8BFB\u3002',
@@ -150,26 +150,79 @@
         '\u8FD8\u6CA1\u6709\u6D88\u606F\u3002\u6210\u4E3A\u7B2C\u4E00\u4E2A\u7ED9Chili\u5199\u70B9\u4EC0\u4E48\u7684\u4EBA\u5427\u3002',
       'thoughts.toast':
         '\u4F60\u7ED9Chili\u7684\u6D88\u606F\u5DF2\u4FDD\u5B58 \u2764\uFE0F',
-      'thoughts.deleteConfirm':
-        '\u5220\u9664\u8FD9\u6761\u6D88\u606F\uFF1F',
-      'footer.madeWith':
-        '\u7528\u7231\u5236\u4F5C\uFF0C\u7EAA\u5FF5Chili',
+      'thoughts.deleteConfirm': '\u5220\u9664\u8FD9\u6761\u6D88\u606F\uFF1F',
+      'footer.madeWith': '\u7528\u7231\u5236\u4F5C\uFF0C\u7EAA\u5FF5Chili',
       'footer.quote':
         '\u201C\u6709\u4F60\u5728\u7684\u4E16\u754C\uFF0C\u53D8\u5F97\u66F4\u52A0\u7F8E\u597D\u3002\u201D',
+      // Editor UI strings
+      'editor.cancel': '\u53D6\u6D88',
+      'editor.save': '\u4FDD\u5B58\u5E76\u7FFB\u8BD1',
+      'editor.translating': '\u6B63\u5728\u7FFB\u8BD1\u2026',
+      'editor.saved': '\u5DF2\u4FDD\u5B58\u5E76\u7FFB\u8BD1',
+      'editor.savedOnly': '\u5DF2\u4FDD\u5B58',
+      'editor.error':
+        '\u7FFB\u8BD1\u5931\u8D25\u2014\u2014\u4EC5\u4FDD\u5B58\u5F53\u524D\u8BED\u8A00',
+      'editor.banner': '\u7F16\u8F91\u6A21\u5F0F',
     },
   };
 
   // ─── State ─────────────────────────────────
-  let currentLang = localStorage.getItem('chili-lang') || 'en';
-  const STORAGE_KEY = 'chili-thoughts';
+  var currentLang = localStorage.getItem('chili-lang') || 'en';
+  var editMode = false;
+  var STORAGE_KEY = 'chili-thoughts';
+  var CUSTOM_TRANS_KEY = 'chili-custom-translations';
+
+  // Merged translations: defaults + custom overrides
+  var translations = { en: {}, zh: {} };
+
+  // ─── Custom Translation Persistence ────────
+  function loadCustomTranslations() {
+    try {
+      return JSON.parse(localStorage.getItem(CUSTOM_TRANS_KEY)) || {
+        en: {},
+        zh: {},
+      };
+    } catch (_e) {
+      return { en: {}, zh: {} };
+    }
+  }
+
+  function saveCustomTranslation(lang, key, text) {
+    var custom = loadCustomTranslations();
+    if (!custom[lang]) custom[lang] = {};
+    custom[lang][key] = text;
+    localStorage.setItem(CUSTOM_TRANS_KEY, JSON.stringify(custom));
+    rebuildTranslations();
+  }
+
+  function rebuildTranslations() {
+    var custom = loadCustomTranslations();
+    ['en', 'zh'].forEach(function (lang) {
+      translations[lang] = {};
+      var def = defaultTranslations[lang] || {};
+      var cust = custom[lang] || {};
+      for (var k in def) {
+        translations[lang][k] = def[k];
+      }
+      for (var k2 in cust) {
+        translations[lang][k2] = cust[k2];
+      }
+    });
+  }
 
   // ─── i18n ──────────────────────────────────
+  function getStr(key) {
+    var dict = translations[currentLang] || {};
+    return dict[key] !== undefined ? dict[key] : key;
+  }
+
   function applyTranslations(lang) {
-    const dict = translations[lang];
+    var dict = translations[lang];
     if (!dict) return;
 
     document.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
+      // Skip editor UI keys when they start with 'editor.'
       if (dict[key] !== undefined) {
         el.textContent = dict[key];
       }
@@ -184,20 +237,231 @@
         }
       });
 
-    // Update html lang attribute
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
 
-    // Highlight active language
     document.querySelectorAll('.lang-option').forEach(function (el) {
       el.classList.toggle('active', el.getAttribute('data-lang') === lang);
     });
+
+    // Update editor UI labels if open
+    updateEditorLabels();
   }
 
   function toggleLanguage() {
     currentLang = currentLang === 'en' ? 'zh' : 'en';
     localStorage.setItem('chili-lang', currentLang);
     applyTranslations(currentLang);
-    renderThoughts(); // re-render to update date format & empty text
+    renderThoughts();
+  }
+
+  // ─── Auto-Translate (MyMemory API) ─────────
+  function autoTranslate(text, fromLang, toLang) {
+    var langPair =
+      (fromLang === 'en' ? 'en' : 'zh-CN') +
+      '|' +
+      (toLang === 'en' ? 'en' : 'zh-CN');
+
+    var url =
+      'https://api.mymemory.translated.net/get?q=' +
+      encodeURIComponent(text) +
+      '&langpair=' +
+      langPair;
+
+    return fetch(url)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (
+          data.responseData &&
+          data.responseData.translatedText &&
+          data.responseData.match > 0
+        ) {
+          return data.responseData.translatedText;
+        }
+        throw new Error('No translation returned');
+      });
+  }
+
+  // ─── Edit Mode ─────────────────────────────
+  var editorPanel = null;
+  var editorTextarea = null;
+  var editorStatus = null;
+  var editorSaveBtn = null;
+  var editorCancelBtn = null;
+  var editorLangLabel = null;
+  var editorBackdrop = null;
+  var currentEditingEl = null;
+  var currentEditingKey = null;
+  var banner = null;
+
+  function toggleEditMode() {
+    editMode = !editMode;
+    document.body.classList.toggle('edit-mode', editMode);
+    document.getElementById('editToggle').classList.toggle('active', editMode);
+
+    if (editMode) {
+      showBanner();
+    } else {
+      hideBanner();
+      closeEditor();
+    }
+  }
+
+  function showBanner() {
+    if (banner) return;
+    banner = document.createElement('div');
+    banner.className = 'edit-mode-banner';
+    banner.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+      '<span>' +
+      getStr('editor.banner') +
+      '</span>';
+    document.body.appendChild(banner);
+  }
+
+  function hideBanner() {
+    if (banner) {
+      banner.remove();
+      banner = null;
+    }
+  }
+
+  function updateEditorLabels() {
+    if (!editorPanel) return;
+    editorCancelBtn.textContent = getStr('editor.cancel');
+    editorSaveBtn.textContent = getStr('editor.save');
+    if (banner) {
+      banner.querySelector('span').textContent = getStr('editor.banner');
+    }
+  }
+
+  function openEditor(el) {
+    var key = el.getAttribute('data-i18n');
+    if (!key) return;
+
+    // Don't edit nav links or editor UI
+    if (key.indexOf('editor.') === 0) return;
+
+    currentEditingEl = el;
+    currentEditingKey = key;
+
+    // Remove previous editing highlight
+    document.querySelectorAll('.editing').forEach(function (e) {
+      e.classList.remove('editing');
+    });
+    el.classList.add('editing');
+
+    // Populate textarea with current language's text
+    var currentText = translations[currentLang][key] || el.textContent;
+    editorTextarea.value = currentText;
+    editorLangLabel.textContent = currentLang === 'en' ? 'EN' : '\u4E2D\u6587';
+    editorStatus.textContent = '';
+    editorStatus.className = 'inline-editor-status';
+    editorSaveBtn.disabled = false;
+    editorSaveBtn.textContent = getStr('editor.save');
+
+    // Auto-size the textarea
+    editorTextarea.rows = Math.min(
+      8,
+      Math.max(2, currentText.split('\n').length + 1)
+    );
+
+    // Position the panel near the element
+    positionEditor(el);
+
+    // Show backdrop + editor
+    if (!editorBackdrop) {
+      editorBackdrop = document.createElement('div');
+      editorBackdrop.className = 'editor-backdrop';
+      editorBackdrop.addEventListener('click', closeEditor);
+    }
+    document.body.appendChild(editorBackdrop);
+    editorPanel.hidden = false;
+
+    // Focus textarea
+    setTimeout(function () {
+      editorTextarea.focus();
+      editorTextarea.select();
+    }, 50);
+  }
+
+  function positionEditor(el) {
+    var rect = el.getBoundingClientRect();
+    var panelWidth = 380;
+    var viewportW = window.innerWidth;
+    var viewportH = window.innerHeight;
+
+    // Place below the element, centered horizontally on it
+    var top = rect.bottom + 10;
+    var left = rect.left + rect.width / 2 - panelWidth / 2;
+
+    // Clamp to viewport
+    if (left < 16) left = 16;
+    if (left + panelWidth > viewportW - 16) left = viewportW - panelWidth - 16;
+
+    // If too close to bottom, place above
+    if (top + 200 > viewportH) {
+      top = rect.top - 10;
+      editorPanel.style.transform = 'translateY(-100%)';
+    } else {
+      editorPanel.style.transform = '';
+    }
+
+    editorPanel.style.top = top + 'px';
+    editorPanel.style.left = left + 'px';
+  }
+
+  function closeEditor() {
+    if (editorPanel) editorPanel.hidden = true;
+    if (editorBackdrop && editorBackdrop.parentNode) {
+      editorBackdrop.remove();
+    }
+    if (currentEditingEl) {
+      currentEditingEl.classList.remove('editing');
+    }
+    currentEditingEl = null;
+    currentEditingKey = null;
+  }
+
+  function handleEditorSave() {
+    var key = currentEditingKey;
+    var newText = editorTextarea.value.trim();
+    if (!key || !newText) return;
+
+    var fromLang = currentLang;
+    var toLang = fromLang === 'en' ? 'zh' : 'en';
+
+    // Save current language immediately
+    saveCustomTranslation(fromLang, key, newText);
+    applyTranslations(currentLang);
+
+    // Show translating status
+    editorSaveBtn.disabled = true;
+    editorStatus.className = 'inline-editor-status translating';
+    editorStatus.innerHTML =
+      '<span class="spinner"></span> ' + getStr('editor.translating');
+
+    // Auto-translate to the other language
+    autoTranslate(newText, fromLang, toLang)
+      .then(function (translated) {
+        saveCustomTranslation(toLang, key, translated);
+
+        editorStatus.className = 'inline-editor-status success';
+        editorStatus.textContent = getStr('editor.saved');
+
+        setTimeout(closeEditor, 800);
+      })
+      .catch(function () {
+        editorStatus.className = 'inline-editor-status error';
+        editorStatus.textContent = getStr('editor.error');
+        editorSaveBtn.disabled = false;
+        editorSaveBtn.textContent = getStr('editor.cancel');
+
+        // Still close after a moment
+        setTimeout(closeEditor, 1800);
+      });
   }
 
   // ─── Thoughts / Messages ───────────────────
@@ -226,8 +490,7 @@
   }
 
   function deleteThought(id) {
-    var dict = translations[currentLang];
-    if (!confirm(dict['thoughts.deleteConfirm'])) return;
+    if (!confirm(getStr('thoughts.deleteConfirm'))) return;
     var thoughts = getThoughts().filter(function (t) {
       return t.id !== id;
     });
@@ -263,12 +526,11 @@
   function renderThoughts() {
     var list = document.getElementById('thoughtsList');
     var thoughts = getThoughts();
-    var dict = translations[currentLang];
 
     if (thoughts.length === 0) {
       list.innerHTML =
         '<p class="thoughts-empty">' +
-        escapeHtml(dict['thoughts.empty']) +
+        escapeHtml(getStr('thoughts.empty')) +
         '</p>';
       return;
     }
@@ -340,7 +602,6 @@
         observer.observe(el);
       });
     } else {
-      // Fallback: show everything
       elements.forEach(function (el) {
         el.classList.add('visible');
       });
@@ -358,22 +619,30 @@
         var isScrolled = window.scrollY > 40;
         if (isScrolled !== scrolled) {
           scrolled = isScrolled;
-          header.style.borderBottomColor = scrolled
-            ? ''
-            : 'transparent';
+          header.style.borderBottomColor = scrolled ? '' : 'transparent';
         }
       },
       { passive: true }
     );
 
-    // Initial state
     if (window.scrollY <= 40) {
       header.style.borderBottomColor = 'transparent';
     }
   }
 
-  // ─── Event Listeners ───────────────────────
+  // ─── Init ──────────────────────────────────
   function init() {
+    // Build merged translations
+    rebuildTranslations();
+
+    // Cache editor DOM references
+    editorPanel = document.getElementById('inlineEditor');
+    editorTextarea = document.getElementById('editorTextarea');
+    editorStatus = document.getElementById('editorStatus');
+    editorSaveBtn = document.getElementById('editorSave');
+    editorCancelBtn = document.getElementById('editorCancel');
+    editorLangLabel = document.getElementById('editorLangLabel');
+
     // Language toggle
     document
       .getElementById('langToggle')
@@ -381,6 +650,46 @@
 
     // Apply saved language
     applyTranslations(currentLang);
+
+    // Edit mode toggle
+    document
+      .getElementById('editToggle')
+      .addEventListener('click', toggleEditMode);
+
+    // Click handler for editable elements (event delegation on body)
+    document.body.addEventListener('click', function (e) {
+      if (!editMode) return;
+
+      // Find the closest [data-i18n] element
+      var target = e.target.closest('[data-i18n]');
+      if (!target) return;
+
+      // Skip nav links (they navigate) and editor keys
+      var key = target.getAttribute('data-i18n');
+      if (key.indexOf('editor.') === 0) return;
+
+      // Prevent default link behavior in edit mode
+      e.preventDefault();
+      e.stopPropagation();
+
+      openEditor(target);
+    });
+
+    // Editor save / cancel
+    editorSaveBtn.addEventListener('click', handleEditorSave);
+    editorCancelBtn.addEventListener('click', closeEditor);
+
+    // Save on Ctrl+Enter / Cmd+Enter in textarea
+    editorTextarea.addEventListener('keydown', function (e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        handleEditorSave();
+      }
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeEditor();
+      }
+    });
 
     // Thoughts form
     document
@@ -396,8 +705,7 @@
           addThought(name, message);
           nameInput.value = '';
           msgInput.value = '';
-          var dict = translations[currentLang];
-          showToast(dict['thoughts.toast']);
+          showToast(getStr('thoughts.toast'));
         }
       });
 

@@ -31,13 +31,32 @@
         <li><a href="#memories" data-i18n="nav.memories">Memories</a></li>
         <li><a href="#thoughts" data-i18n="nav.thoughts">Thoughts</a></li>
       </ul>
-      <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
-        <span class="lang-option" data-lang="en">EN</span>
-        <span class="lang-divider">|</span>
-        <span class="lang-option" data-lang="zh">中文</span>
-      </button>
+      <div class="nav-actions">
+        <button class="edit-toggle" id="editToggle" aria-label="Toggle edit mode" title="Edit mode">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </button>
+        <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
+          <span class="lang-option" data-lang="en">EN</span>
+          <span class="lang-divider">|</span>
+          <span class="lang-option" data-lang="zh">中文</span>
+        </button>
+      </div>
     </nav>
   </header>
+
+  <!-- Inline Editor Panel (reused, moved by JS) -->
+  <div class="inline-editor" id="inlineEditor" hidden>
+    <label class="inline-editor-lang" id="editorLangLabel">EN</label>
+    <textarea class="inline-editor-textarea" id="editorTextarea" rows="3"></textarea>
+    <div class="inline-editor-status" id="editorStatus"></div>
+    <div class="inline-editor-actions">
+      <button type="button" class="inline-editor-btn cancel" id="editorCancel" data-i18n="editor.cancel">Cancel</button>
+      <button type="button" class="inline-editor-btn save" id="editorSave" data-i18n="editor.save">Save & Translate</button>
+    </div>
+  </div>
 
   <!-- Hero Section -->
   <section class="hero" id="hero">

@@ -660,6 +660,232 @@ img, svg {
   transform: translateX(-50%) translateY(0);
 }
 
+/* --- Nav Actions (edit + lang) --- */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-toggle {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.35rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.edit-toggle:hover {
+  color: var(--accent);
+  border-color: var(--card-border);
+}
+
+.edit-toggle.active {
+  color: var(--accent);
+  background: var(--bg-alt);
+  border-color: var(--accent);
+}
+
+/* --- Edit Mode --- */
+body.edit-mode [data-i18n] {
+  cursor: pointer;
+  outline: 1.5px dashed transparent;
+  outline-offset: 4px;
+  border-radius: 4px;
+  transition: outline-color 0.2s ease;
+}
+
+body.edit-mode [data-i18n]:hover {
+  outline-color: var(--accent);
+}
+
+body.edit-mode [data-i18n].editing {
+  outline-color: var(--accent);
+  outline-style: solid;
+}
+
+.edit-mode-banner {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  z-index: 150;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  animation: fadeUp 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.edit-mode-banner svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* --- Inline Editor Panel --- */
+.inline-editor {
+  position: fixed;
+  z-index: 300;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px var(--card-shadow), 0 0 0 1px var(--card-border);
+  padding: 1rem;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  animation: editorIn 0.2s ease-out;
+}
+
+.inline-editor[hidden] {
+  display: none;
+}
+
+@keyframes editorIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.inline-editor-lang {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: var(--bg-alt);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.inline-editor-textarea {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-sm);
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  max-height: 200px;
+  line-height: 1.6;
+  transition: border-color var(--transition);
+}
+
+.inline-editor-textarea:focus {
+  border-color: var(--accent);
+}
+
+.inline-editor-status {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  min-height: 1.2em;
+  margin: 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.inline-editor-status.translating {
+  color: var(--accent);
+}
+
+.inline-editor-status.error {
+  color: #c0392b;
+}
+
+.inline-editor-status.success {
+  color: #27ae60;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--card-border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.inline-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.inline-editor-btn {
+  padding: 0.4rem 1rem;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition);
+  border: none;
+}
+
+.inline-editor-btn.cancel {
+  background: var(--bg-alt);
+  color: var(--text-secondary);
+}
+
+.inline-editor-btn.cancel:hover {
+  background: var(--card-border);
+}
+
+.inline-editor-btn.save {
+  background: var(--accent);
+  color: #fff;
+}
+
+.inline-editor-btn.save:hover {
+  background: var(--accent-hover);
+}
+
+.inline-editor-btn.save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Backdrop overlay when editor is open */
+.editor-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background: rgba(0,0,0,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .editor-backdrop {
+    background: rgba(0,0,0,0.25);
+  }
+}
+
 /* --- Responsive --- */
 @media (max-width: 640px) {
   .nav-links {
@@ -706,6 +932,18 @@ img, svg {
 
   .thought-card {
     padding: 1rem 1.25rem;
+  }
+}
+
+  .inline-editor {
+    width: calc(100vw - 2rem);
+    left: 1rem !important;
+    right: 1rem !important;
+  }
+
+  .edit-mode-banner {
+    bottom: 1rem;
+    right: 1rem;
   }
 }
 
