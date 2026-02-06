@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chili — Forever Our Good Girl</title>
+  <meta name="description" content="A loving memorial for Chili, our beautiful German Shepherd (2019–2026). Forever in our hearts.">
+  <meta property="og:title" content="In Memory of Chili">
+  <meta property="og:description" content="A loving memorial for our beautiful German Shepherd girl.">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header / Navigation -->
+  <header class="site-header" id="header">
+    <nav class="nav-container">
+      <a href="#hero" class="nav-logo">
+        <svg class="nav-paw" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+          <ellipse cx="12" cy="17" rx="6" ry="5"/>
+          <circle cx="5.5" cy="9" r="2.8"/>
+          <circle cx="11" cy="6.5" r="2.5"/>
+          <circle cx="17" cy="6.5" r="2.5"/>
+          <circle cx="19.5" cy="11" r="2.5"/>
+        </svg>
+        <span>Chili</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about" data-i18n="nav.about">About</a></li>
+        <li><a href="#memories" data-i18n="nav.memories">Memories</a></li>
+        <li><a href="#thoughts" data-i18n="nav.thoughts">Thoughts</a></li>
+      </ul>
+      <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
+        <span class="lang-option" data-lang="en">EN</span>
+        <span class="lang-divider">|</span>
+        <span class="lang-option" data-lang="zh">中文</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <div class="hero-portrait">
+        <!-- Inline SVG: Cute German Shepherd Portrait -->
+        <svg class="chili-portrait" viewBox="0 0 400 440" xmlns="http://www.w3.org/2000/svg" aria-label="Portrait of Chili the German Shepherd">
+          <!-- Halo / glow -->
+          <defs>
+            <radialGradient id="haloGlow" cx="50%" cy="45%" r="50%">
+              <stop offset="0%" stop-color="var(--accent)" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="var(--portrait-bg-inner)"/>
+              <stop offset="100%" stop-color="var(--portrait-bg-outer)"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Background circle -->
+          <circle cx="200" cy="200" r="185" fill="url(#bgGrad)"/>
+          <circle cx="200" cy="200" r="185" fill="url(#haloGlow)"/>
+
+          <!-- Ears (behind head) -->
+          <path d="M105,185 L125,52 L195,155 Z" fill="#7a4a28"/>
+          <path d="M295,185 L275,52 L205,155 Z" fill="#7a4a28"/>
+          <!-- Inner ears -->
+          <path d="M120,175 L135,75 L185,152 Z" fill="#c9956a"/>
+          <path d="M280,175 L265,75 L215,152 Z" fill="#c9956a"/>
+
+          <!-- Head (base) -->
+          <ellipse cx="200" cy="215" rx="105" ry="115" fill="#c47a3a"/>
+
+          <!-- Forehead dark saddle marking -->
+          <path d="M140,165 Q170,120 200,115 Q230,120 260,165 Q240,195 200,200 Q160,195 140,165 Z" fill="#6b3f1f"/>
+
+          <!-- Cheek fur -->
+          <ellipse cx="120" cy="230" rx="30" ry="35" fill="#d4935a"/>
+          <ellipse cx="280" cy="230" rx="30" ry="35" fill="#d4935a"/>
+
+          <!-- Muzzle (lighter area) -->
+          <ellipse cx="200" cy="268" rx="60" ry="52" fill="#deb587"/>
+
+          <!-- Eyes -->
+          <ellipse cx="162" cy="205" rx="15" ry="17" fill="#2a1f16"/>
+          <ellipse cx="238" cy="205" rx="15" ry="17" fill="#2a1f16"/>
+          <!-- Eye highlights -->
+          <circle cx="168" cy="199" r="6" fill="white" opacity="0.65"/>
+          <circle cx="244" cy="199" r="6" fill="white" opacity="0.65"/>
+          <!-- Small secondary highlights -->
+          <circle cx="157" cy="210" r="3" fill="white" opacity="0.35"/>
+          <circle cx="233" cy="210" r="3" fill="white" opacity="0.35"/>
+
+          <!-- Eyebrows (cute GSD tan dots) -->
+          <ellipse cx="162" cy="185" rx="10" ry="5" fill="#d4935a"/>
+          <ellipse cx="238" cy="185" rx="10" ry="5" fill="#d4935a"/>
+
+          <!-- Nose -->
+          <ellipse cx="200" cy="253" rx="19" ry="14" fill="#1a1210"/>
+          <ellipse cx="196" cy="250" rx="6" ry="4" fill="white" opacity="0.15"/>
+
+          <!-- Mouth lines -->
+          <path d="M200,267 Q183,288 170,282" stroke="#8b5e3c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M200,267 Q217,288 230,282" stroke="#8b5e3c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+          <!-- Tongue (cute!) -->
+          <ellipse cx="200" cy="290" rx="11" ry="16" fill="#e88b8b"/>
+          <path d="M193,289 Q200,300 207,289" fill="#d47777"/>
+
+          <!-- Decorative elements -->
+          <!-- Small heart above -->
+          <path d="M200,25 C200,18 192,10 185,16 C178,22 185,32 200,42 C215,32 222,22 215,16 C208,10 200,18 200,25 Z" fill="var(--accent)" opacity="0.5"/>
+
+          <!-- Paw prints bottom -->
+          <g transform="translate(85, 390) scale(0.5)" opacity="0.35" fill="var(--text)">
+            <ellipse cx="12" cy="17" rx="8" ry="6"/>
+            <circle cx="4" cy="8" r="3"/>
+            <circle cx="11" cy="5" r="2.8"/>
+            <circle cx="18" cy="5" r="2.8"/>
+            <circle cx="23" cy="9.5" r="2.5"/>
+          </g>
+          <g transform="translate(280, 395) scale(0.45)" opacity="0.3" fill="var(--text)">
+            <ellipse cx="12" cy="17" rx="8" ry="6"/>
+            <circle cx="4" cy="8" r="3"/>
+            <circle cx="11" cy="5" r="2.8"/>
+            <circle cx="18" cy="5" r="2.8"/>
+            <circle cx="23" cy="9.5" r="2.5"/>
+          </g>
+
+          <!-- Small stars -->
+          <circle cx="60" cy="65" r="3" fill="var(--accent)" opacity="0.4"/>
+          <circle cx="340" cy="80" r="2.5" fill="var(--accent)" opacity="0.35"/>
+          <circle cx="50" cy="120" r="2" fill="var(--accent)" opacity="0.25"/>
+          <circle cx="350" cy="140" r="2" fill="var(--accent)" opacity="0.3"/>
+        </svg>
+      </div>
+
+      <h1 class="hero-title">Chili</h1>
+      <p class="hero-years">2019 &mdash; 2026</p>
+      <p class="hero-subtitle" data-i18n="hero.subtitle">Forever our sunshine, forever our good girl</p>
+
+      <a href="#about" class="scroll-hint" aria-label="Scroll down">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M12 5v14M5 12l7 7 7-7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="section" id="about">
+    <div class="container">
+      <h2 class="section-title" data-i18n="about.title">Our Beloved Chili</h2>
+
+      <div class="about-intro fade-in">
+        <p data-i18n="about.intro1">
+          Chili was a beautiful German Shepherd who came into our lives in 2019 as a tiny,
+          curious puppy with oversized paws and the most soulful brown eyes. Over seven
+          wonderful years, she grew into the most loyal, gentle, and loving companion
+          our family could ever wish for.
+        </p>
+        <p data-i18n="about.intro2">
+          She wasn't just a dog &mdash; she was the one who greeted us at the door with her whole
+          body wiggling with joy. She was the warm presence beside us on cold nights. She was
+          the patient playmate who let the kids climb all over her. She was the guardian who
+          kept watch over our home. She was, in every way, family.
+        </p>
+      </div>
+
+      <div class="about-columns">
+        <div class="about-card fade-in">
+          <div class="about-card-icon">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <h3 data-i18n="about.specialTitle">What Made Chili Special</h3>
+          <ul class="about-list">
+            <li data-i18n="about.special1">She had the gentlest soul &mdash; always so careful and patient around the children</li>
+            <li data-i18n="about.special2">Her tail never stopped wagging, even when she was sleepy</li>
+            <li data-i18n="about.special3">She could hear a treat bag crinkle from anywhere in the house</li>
+            <li data-i18n="about.special4">She loved to "talk" with her adorable little whines and woofs</li>
+            <li data-i18n="about.special5">Her favorite spot was right next to whoever was home</li>
+            <li data-i18n="about.special6">She believed she was a lap dog, despite weighing 30 kilograms</li>
+          </ul>
+        </div>
+
+        <div class="about-card fade-in">
+          <div class="about-card-icon">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <h3 data-i18n="about.favoritesTitle">Chili's Favorite Things</h3>
+          <ul class="about-list">
+            <li data-i18n="about.fav1">Morning walks when the dew was still on the grass</li>
+            <li data-i18n="about.fav2">Playing fetch until everyone else was tired</li>
+            <li data-i18n="about.fav3">Belly rubs &mdash; she'd roll over for anyone</li>
+            <li data-i18n="about.fav4">Guarding the family from suspicious squirrels</li>
+            <li data-i18n="about.fav5">Napping in sunbeams by the window</li>
+            <li data-i18n="about.fav6">Being wherever her people were</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Memories Section -->
+  <section class="section section-alt" id="memories">
+    <div class="container">
+      <h2 class="section-title" data-i18n="memories.title">Precious Memories</h2>
+      <p class="section-subtitle" data-i18n="memories.subtitle">Seven years of love, joy, and wagging tails</p>
+
+      <div class="memories-timeline">
+
+        <div class="memory-card fade-in">
+          <div class="memory-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+          </div>
+          <h3 data-i18n="memories.m1Title">The Day We Met</h3>
+          <p data-i18n="memories.m1Text">
+            We remember the day we brought Chili home &mdash; a tiny bundle of fur with ears too big for
+            her head. She explored every corner of the house, then fell asleep right in the middle of
+            the living room floor. That was the moment she claimed our home as hers.
+          </p>
+        </div>
+
+        <div class="memory-card fade-in">
+          <div class="memory-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          </div>
+          <h3 data-i18n="memories.m2Title">The Great Squirrel Chase</h3>
+          <p data-i18n="memories.m2Text">
+            Chili took her job as family protector very seriously, especially when it came to squirrels.
+            She once spent an entire afternoon staring up a tree, convinced that if she waited long enough,
+            the squirrel would come down to play.
+          </p>
+        </div>
+
+        <div class="memory-card fade-in">
+          <div class="memory-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+          </div>
+          <h3 data-i18n="memories.m3Title">Bedtime Routine</h3>
+          <p data-i18n="memories.m3Text">
+            Every night, Chili would make her rounds &mdash; checking on each family member, giving a gentle
+            nudge with her nose, before settling down to sleep. It was her way of saying goodnight,
+            and it made everyone feel so safe and loved.
+          </p>
+        </div>
+
+        <div class="memory-card fade-in">
+          <div class="memory-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707"/><circle cx="12" cy="12" r="4"/></svg>
+          </div>
+          <h3 data-i18n="memories.m4Title">Snow Day</h3>
+          <p data-i18n="memories.m4Text">
+            The first time Chili saw snow, she didn't know what to make of it. Then she started bounding
+            through the white fluff, catching snowflakes on her tongue, rolling on her back. Pure,
+            unbridled joy &mdash; that was Chili's way.
+          </p>
+        </div>
+
+        <div class="memory-card fade-in">
+          <div class="memory-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+          <h3 data-i18n="memories.m5Title">The Best Listener</h3>
+          <p data-i18n="memories.m5Text">
+            Whenever anyone in the family was having a tough day, Chili always knew. She'd come over
+            quietly, rest her head on your lap, and just be there. No judgment, no questions &mdash;
+            just love. She had a gift for making everything feel a little bit better.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Thoughts Section -->
+  <section class="section" id="thoughts">
+    <div class="container">
+      <h2 class="section-title" data-i18n="thoughts.title">Words for Chili</h2>
+      <p class="section-subtitle" data-i18n="thoughts.subtitle">
+        Share your favorite memory, a message, or just say goodbye. Chili would love to know she's remembered.
+      </p>
+
+      <form class="thoughts-form" id="thoughtsForm">
+        <div class="form-group">
+          <label for="thoughtName" data-i18n="thoughts.nameLabel">Your Name</label>
+          <input type="text" id="thoughtName" required maxlength="50" data-i18n-placeholder="thoughts.namePlaceholder" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label for="thoughtMessage" data-i18n="thoughts.messageLabel">Your Message for Chili</label>
+          <textarea id="thoughtMessage" required maxlength="500" rows="4" data-i18n-placeholder="thoughts.messagePlaceholder" placeholder="Write something for Chili..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit" data-i18n="thoughts.submit">Leave a Message</button>
+      </form>
+
+      <div class="thoughts-list" id="thoughtsList">
+        <!-- Messages rendered by JS -->
+      </div>
+
+      <p class="thoughts-note" data-i18n="thoughts.note">
+        Messages are saved in your browser so your family can read them on this device.
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-paw">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" opacity="0.4">
+        <ellipse cx="12" cy="17" rx="6" ry="5"/>
+        <circle cx="5.5" cy="9" r="2.8"/>
+        <circle cx="11" cy="6.5" r="2.5"/>
+        <circle cx="17" cy="6.5" r="2.5"/>
+        <circle cx="19.5" cy="11" r="2.5"/>
+      </svg>
+    </div>
+    <p class="footer-text" data-i18n="footer.madeWith">Made with love, in memory of Chili</p>
+    <p class="footer-quote" data-i18n="footer.quote">"The world was a better place with you in it."</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
