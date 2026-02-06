@@ -341,6 +341,40 @@
     <p class="footer-quote" data-i18n="footer.quote">"The world was a better place with you in it."</p>
   </footer>
 
+  <!-- GitHub Settings Modal -->
+  <div class="modal-backdrop" id="ghModalBackdrop" hidden></div>
+  <div class="modal" id="ghModal" hidden>
+    <div class="modal-header">
+      <h3 data-i18n="gh.title">Save to GitHub</h3>
+      <button class="modal-close" id="ghModalClose" aria-label="Close">&times;</button>
+    </div>
+    <p class="modal-desc" data-i18n="gh.desc">Connect to GitHub to save your edits directly to the repository. Changes will go live on your site automatically.</p>
+    <form id="ghSettingsForm">
+      <div class="form-group">
+        <label for="ghOwner" data-i18n="gh.ownerLabel">Repository Owner</label>
+        <input type="text" id="ghOwner" required placeholder="e.g. taom">
+      </div>
+      <div class="form-group">
+        <label for="ghRepo" data-i18n="gh.repoLabel">Repository Name</label>
+        <input type="text" id="ghRepo" required placeholder="e.g. forchili">
+      </div>
+      <div class="form-group">
+        <label for="ghBranch" data-i18n="gh.branchLabel">Branch</label>
+        <input type="text" id="ghBranch" required placeholder="e.g. main">
+      </div>
+      <div class="form-group">
+        <label for="ghToken" data-i18n="gh.tokenLabel">Personal Access Token</label>
+        <input type="password" id="ghToken" required placeholder="ghp_xxxxxxxxxxxx">
+        <small class="form-hint" data-i18n="gh.tokenHint">Create one at GitHub &rarr; Settings &rarr; Developer settings &rarr; Personal access tokens. Needs &ldquo;Contents&rdquo; write permission. Stored only in your browser.</small>
+      </div>
+      <div class="inline-editor-status" id="ghStatus"></div>
+      <div class="modal-actions">
+        <button type="button" class="inline-editor-btn cancel" id="ghCancelBtn" data-i18n="editor.cancel">Cancel</button>
+        <button type="submit" class="inline-editor-btn save" id="ghSaveBtn" data-i18n="gh.saveBtn">Save to GitHub</button>
+      </div>
+    </form>
+  </div>
+
   <script src="js/main.js"></script>
 </body>
 </html>

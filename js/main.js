@@ -81,6 +81,22 @@
       'editor.savedOnly': 'Saved',
       'editor.error': 'Translation failed \u2014 saved current language only',
       'editor.banner': 'Edit Mode',
+      // GitHub save UI strings
+      'gh.title': 'Save to GitHub',
+      'gh.desc':
+        'Connect to GitHub to save your edits directly to the repository. Changes will go live on your site automatically.',
+      'gh.ownerLabel': 'Repository Owner',
+      'gh.repoLabel': 'Repository Name',
+      'gh.branchLabel': 'Branch',
+      'gh.tokenLabel': 'Personal Access Token',
+      'gh.tokenHint':
+        'Create one at GitHub \u2192 Settings \u2192 Developer settings \u2192 Personal access tokens. Needs \u201CContents\u201D write permission. Stored only in your browser.',
+      'gh.saveBtn': 'Save to GitHub',
+      'gh.saving': 'Saving to GitHub\u2026',
+      'gh.success': 'Saved! Changes will be live shortly.',
+      'gh.error': 'Failed to save. Check your token and try again.',
+      'gh.noEdits': 'No edits to save.',
+      'gh.bannerSave': 'Push to GitHub',
     },
     zh: {
       'nav.about': '\u5173\u4E8EChili',
@@ -163,6 +179,22 @@
       'editor.error':
         '\u7FFB\u8BD1\u5931\u8D25\u2014\u2014\u4EC5\u4FDD\u5B58\u5F53\u524D\u8BED\u8A00',
       'editor.banner': '\u7F16\u8F91\u6A21\u5F0F',
+      // GitHub save UI strings
+      'gh.title': '\u4FDD\u5B58\u5230GitHub',
+      'gh.desc':
+        '\u8FDE\u63A5GitHub\uFF0C\u5C06\u7F16\u8F91\u5185\u5BB9\u76F4\u63A5\u4FDD\u5B58\u5230\u4ED3\u5E93\u3002\u66F4\u6539\u4F1A\u81EA\u52A8\u53D1\u5E03\u5230\u7F51\u7AD9\u3002',
+      'gh.ownerLabel': '\u4ED3\u5E93\u6240\u6709\u8005',
+      'gh.repoLabel': '\u4ED3\u5E93\u540D\u79F0',
+      'gh.branchLabel': '\u5206\u652F',
+      'gh.tokenLabel': '\u4E2A\u4EBA\u8BBF\u95EE\u4EE4\u724C',
+      'gh.tokenHint':
+        '\u5728GitHub \u2192 Settings \u2192 Developer settings \u2192 Personal access tokens\u521B\u5EFA\u3002\u9700\u8981\u201CContents\u201D\u5199\u5165\u6743\u9650\u3002\u4EC5\u5B58\u50A8\u5728\u4F60\u7684\u6D4F\u89C8\u5668\u4E2D\u3002',
+      'gh.saveBtn': '\u4FDD\u5B58\u5230GitHub',
+      'gh.saving': '\u6B63\u5728\u4FDD\u5B58\u5230GitHub\u2026',
+      'gh.success': '\u5DF2\u4FDD\u5B58\uFF01\u66F4\u6539\u5C06\u5F88\u5FEB\u751F\u6548\u3002',
+      'gh.error': '\u4FDD\u5B58\u5931\u8D25\u3002\u8BF7\u68C0\u67E5\u4EE4\u724C\u5E76\u91CD\u8BD5\u3002',
+      'gh.noEdits': '\u6CA1\u6709\u9700\u8981\u4FDD\u5B58\u7684\u7F16\u8F91\u3002',
+      'gh.bannerSave': '\u63A8\u9001\u5230GitHub',
     },
   };
 
@@ -171,9 +203,11 @@
   var editMode = false;
   var STORAGE_KEY = 'chili-thoughts';
   var CUSTOM_TRANS_KEY = 'chili-custom-translations';
+  var GH_SETTINGS_KEY = 'chili-gh-settings';
 
-  // Merged translations: defaults + custom overrides
+  // Merged translations: defaults < remote (GitHub) < local (localStorage)
   var translations = { en: {}, zh: {} };
+  var remoteCustom = { en: {}, zh: {} }; // from data/custom-translations.json
 
   // ─── Custom Translation Persistence ────────
   function loadCustomTranslations() {
@@ -196,17 +230,16 @@
   }
 
   function rebuildTranslations() {
-    var custom = loadCustomTranslations();
+    var local = loadCustomTranslations();
     ['en', 'zh'].forEach(function (lang) {
       translations[lang] = {};
       var def = defaultTranslations[lang] || {};
-      var cust = custom[lang] || {};
-      for (var k in def) {
-        translations[lang][k] = def[k];
-      }
-      for (var k2 in cust) {
-        translations[lang][k2] = cust[k2];
-      }
+      var remote = remoteCustom[lang] || {};
+      var loc = local[lang] || {};
+      // Layer: defaults < remote (GitHub file) < local (unsaved edits)
+      for (var k in def) translations[lang][k] = def[k];
+      for (var k2 in remote) translations[lang][k2] = remote[k2];
+      for (var k3 in loc) translations[lang][k3] = loc[k3];
     });
   }
 
@@ -284,6 +317,114 @@
       });
   }
 
+  // ─── GitHub Settings ────────────────────────
+  function loadGhSettings() {
+    try {
+      return JSON.parse(localStorage.getItem(GH_SETTINGS_KEY)) || {};
+    } catch (_e) {
+      return {};
+    }
+  }
+
+  function saveGhSettings(settings) {
+    localStorage.setItem(GH_SETTINGS_KEY, JSON.stringify(settings));
+  }
+
+  // Fetch the committed custom-translations.json from the site itself
+  function fetchRemoteTranslations() {
+    return fetch('data/custom-translations.json?_t=' + Date.now())
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        if (data && typeof data === 'object') {
+          remoteCustom = { en: data.en || {}, zh: data.zh || {} };
+        }
+      })
+      .catch(function () {
+        // File doesn't exist or can't be fetched — that's fine
+      });
+  }
+
+  // ─── GitHub API: save to repo ──────────────
+  function mergeAllCustom() {
+    // Merge remote + local into one object to commit
+    var local = loadCustomTranslations();
+    var merged = { en: {}, zh: {} };
+    ['en', 'zh'].forEach(function (lang) {
+      var r = remoteCustom[lang] || {};
+      var l = local[lang] || {};
+      for (var k in r) merged[lang][k] = r[k];
+      for (var k2 in l) merged[lang][k2] = l[k2];
+    });
+    return merged;
+  }
+
+  function hasLocalEdits() {
+    var local = loadCustomTranslations();
+    return (
+      Object.keys(local.en || {}).length > 0 ||
+      Object.keys(local.zh || {}).length > 0
+    );
+  }
+
+  function commitToGitHub(settings) {
+    var owner = settings.owner;
+    var repo = settings.repo;
+    var branch = settings.branch || 'main';
+    var token = settings.token;
+    var filePath = 'data/custom-translations.json';
+    var apiBase = 'https://api.github.com/repos/' + owner + '/' + repo;
+
+    var merged = mergeAllCustom();
+    var content = JSON.stringify(merged, null, 2) + '\n';
+    var encoded = btoa(unescape(encodeURIComponent(content)));
+
+    var headers = {
+      Authorization: 'Bearer ' + token,
+      Accept: 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    };
+
+    // 1. Get the current file SHA (needed for updates)
+    return fetch(apiBase + '/contents/' + filePath + '?ref=' + branch, {
+      headers: headers,
+    })
+      .then(function (res) {
+        if (res.status === 404) return null; // file doesn't exist yet
+        if (!res.ok) throw new Error('GitHub API error: ' + res.status);
+        return res.json();
+      })
+      .then(function (existing) {
+        var body = {
+          message: 'Update custom translations',
+          content: encoded,
+          branch: branch,
+        };
+        if (existing && existing.sha) {
+          body.sha = existing.sha;
+        }
+
+        // 2. Create or update the file
+        return fetch(apiBase + '/contents/' + filePath, {
+          method: 'PUT',
+          headers: headers,
+          body: JSON.stringify(body),
+        });
+      })
+      .then(function (res) {
+        if (!res.ok) throw new Error('GitHub commit failed: ' + res.status);
+        return res.json();
+      })
+      .then(function () {
+        // Success: merge local into remote and clear local
+        remoteCustom = mergeAllCustom();
+        localStorage.removeItem(CUSTOM_TRANS_KEY);
+        rebuildTranslations();
+      });
+  }
+
   // ─── Edit Mode ─────────────────────────────
   var editorPanel = null;
   var editorTextarea = null;
@@ -317,8 +458,15 @@
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
       '<span>' +
       getStr('editor.banner') +
-      '</span>';
+      '</span>' +
+      '<button class="banner-save" id="bannerSave">' +
+      getStr('gh.bannerSave') +
+      '</button>';
     document.body.appendChild(banner);
+
+    document.getElementById('bannerSave').addEventListener('click', function () {
+      openGhModal();
+    });
   }
 
   function hideBanner() {
@@ -630,10 +778,82 @@
     }
   }
 
+  // ─── GitHub Modal ───────────────────────────
+  function openGhModal() {
+    var modal = document.getElementById('ghModal');
+    var backdrop = document.getElementById('ghModalBackdrop');
+    var status = document.getElementById('ghStatus');
+    var saved = loadGhSettings();
+
+    // Pre-fill saved settings
+    document.getElementById('ghOwner').value = saved.owner || '';
+    document.getElementById('ghRepo').value = saved.repo || '';
+    document.getElementById('ghBranch').value = saved.branch || 'main';
+    document.getElementById('ghToken').value = saved.token || '';
+    status.textContent = '';
+    status.className = 'inline-editor-status';
+
+    modal.hidden = false;
+    backdrop.hidden = false;
+  }
+
+  function closeGhModal() {
+    document.getElementById('ghModal').hidden = true;
+    document.getElementById('ghModalBackdrop').hidden = true;
+  }
+
+  function handleGhSave(e) {
+    e.preventDefault();
+    var status = document.getElementById('ghStatus');
+    var saveBtn = document.getElementById('ghSaveBtn');
+
+    if (!hasLocalEdits()) {
+      status.className = 'inline-editor-status';
+      status.textContent = getStr('gh.noEdits');
+      return;
+    }
+
+    var settings = {
+      owner: document.getElementById('ghOwner').value.trim(),
+      repo: document.getElementById('ghRepo').value.trim(),
+      branch: document.getElementById('ghBranch').value.trim() || 'main',
+      token: document.getElementById('ghToken').value.trim(),
+    };
+
+    // Persist settings (token stored locally only)
+    saveGhSettings(settings);
+
+    // Show saving state
+    saveBtn.disabled = true;
+    status.className = 'inline-editor-status translating';
+    status.innerHTML =
+      '<span class="spinner"></span> ' + getStr('gh.saving');
+
+    commitToGitHub(settings)
+      .then(function () {
+        status.className = 'inline-editor-status success';
+        status.textContent = getStr('gh.success');
+        saveBtn.disabled = false;
+        setTimeout(closeGhModal, 1200);
+        showToast(getStr('gh.success'));
+      })
+      .catch(function (err) {
+        status.className = 'inline-editor-status error';
+        status.textContent = getStr('gh.error') + ' (' + err.message + ')';
+        saveBtn.disabled = false;
+      });
+  }
+
   // ─── Init ──────────────────────────────────
   function init() {
-    // Build merged translations
+    // Build merged translations (defaults + localStorage for now)
     rebuildTranslations();
+
+    // Fetch the committed custom-translations.json, then re-merge & re-apply
+    fetchRemoteTranslations().then(function () {
+      rebuildTranslations();
+      applyTranslations(currentLang);
+    });
 
     // Cache editor DOM references
     editorPanel = document.getElementById('inlineEditor');
@@ -718,6 +938,20 @@
           deleteThought(btn.getAttribute('data-id'));
         }
       });
+
+    // GitHub modal events
+    document
+      .getElementById('ghSettingsForm')
+      .addEventListener('submit', handleGhSave);
+    document
+      .getElementById('ghModalClose')
+      .addEventListener('click', closeGhModal);
+    document
+      .getElementById('ghCancelBtn')
+      .addEventListener('click', closeGhModal);
+    document
+      .getElementById('ghModalBackdrop')
+      .addEventListener('click', closeGhModal);
 
     // Render saved thoughts
     renderThoughts();
